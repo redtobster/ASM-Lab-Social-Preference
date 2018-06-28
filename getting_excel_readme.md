@@ -1,4 +1,4 @@
-(#Readme-for-the-getting_excel.py)
+# Readme for the getting_excel.py
 
 This python file contains _two_ functions:
   1. `categorize_files` - to get the names of the excel files and store them into a list.
@@ -74,10 +74,10 @@ The code snippet above sorts the lists that have been saved so far. This is impo
 
 ```
 def getting_name(left_tank):
-		string = re.match('([A-Z]+).*', left_tank[0]).group(1)
+	string = re.match('([A-Z]+).*', left_tank[0]).group(1)
     		return string
 ```
 
-The [function `getting_name`](#Readme-for-the-getting_excel.py) takes a list of excel file names as argument. Then it gets all letters of the excel file before the character ‘_’. This string is then returned.
+The [function `getting_name`](# Readme for the getting_excel.py) takes a list of excel file names as argument. Then it gets all letters of the excel file before the character ‘_’. This string is then returned.
 
 As always, I am very happy to receive suggestions to make the code more elegant.
