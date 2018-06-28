@@ -14,7 +14,7 @@ excel = raw_input('')
 path = desktop + '\\Webcam\\' + excel + '\\'
 ```
 
-1. Getting the directory that contains the excel file in 3 steps:
+Getting the directory that contains the excel file in 3 steps:
   1. Using the os package, I can find the directory of desktop on any device automatically.
   1. Ask the user what is the name of the excel folder.
   1. Create the directory name that is to be accessed.
