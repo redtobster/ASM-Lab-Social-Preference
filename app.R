@@ -73,7 +73,14 @@ get_list <- function(lst, type1, type2){
 }
 
 # function that takes in a df
-plot_CI <- function(df){
+plot_CI <- function(df, string){
+  annotations <- data.frame(
+    xpos = -Inf,
+    ypos =  Inf,
+    annotateText = string,
+    hjustvar = 0,
+    vjustvar = 1)
+
   color <- brewer.pal(3, "Set2")[c(1,2)]
   ggplot(df, aes(time, mean, group = Type)) +
     geom_point(aes(color = Type)) +
@@ -88,7 +95,9 @@ plot_CI <- function(df){
     theme_classic() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0, margin = margin(r = 0))) +
     theme(legend.position = c(0.89, 0.85)) +
-    theme(text = element_text(family="Helvetica"))
+    theme(text = element_text(family="Helvetica")) +
+    geom_text(data = annotations, aes(x=xpos,y=ypos,hjust=hjustvar,vjust=vjustvar,label=annotateText,group=1))
+    
 }
 
 ##########################################################################################################
@@ -484,13 +493,13 @@ server <- function(input, output, session) {
       if(!(input$box7) && !(input$box1)){
         p1 <- NULL
       } else if (!(input$box7)) {
-        p1 <- plot_CI(plot_test()[["df_quad1.csv"]][seq_len(input$freq),])
+        p1 <- plot_CI(plot_test()[["df_quad1.csv"]][seq_len(input$freq),], paste("Quadrant 1:", input$text1))
       } else if (!(input$box1)) {
         p1 <- plot_CI(plot_test()[["df_quad1.csv"]][seq_len(input$freq) + 
-                                                      (nrow(plot_test()[["df_quad1.csv"]])/2),])
+                                                      (nrow(plot_test()[["df_quad1.csv"]])/2),], paste("Quadrant 1:", input$text2))
       } else if ((input$box1) && (input$box7)){
         p1 <- plot_CI(plot_test()[["df_quad1.csv"]][c(seq_len(input$freq), seq_len(input$freq)+
-                                                        (nrow(plot_test()[["df_quad1.csv"]])/2)),])
+                                                        (nrow(plot_test()[["df_quad1.csv"]])/2)),], paste("Quadrant 1:", input$text1, "v", input$text2))
       }
     } else if (controlVarPlotSex$plotReadySex == TRUE){
       if(!(input$box7) && !(input$box1)){
@@ -522,13 +531,13 @@ server <- function(input, output, session) {
       if(!(input$box8) && !(input$box2)){
         p2 <- NULL
       } else if (!(input$box8)) {
-        p2 <- plot_CI(plot_test()[["df_quad2.csv"]][seq_len(input$freq),])
+        p2 <- plot_CI(plot_test()[["df_quad2.csv"]][seq_len(input$freq),], paste("Quadrant 2:", input$text1))
       } else if (!(input$box2)) {
         p2 <- plot_CI(plot_test()[["df_quad2.csv"]][seq_len(input$freq) + 
-                                                      (nrow(plot_test()[["df_quad2.csv"]])/2),])
+                                                      (nrow(plot_test()[["df_quad2.csv"]])/2),], paste("Quadrant 2:", input$text2))
       } else if ((input$box2) && (input$box8)){
         p2 <- plot_CI(plot_test()[["df_quad2.csv"]][c(seq_len(input$freq), seq_len(input$freq)+
-                                                        (nrow(plot_test()[["df_quad2.csv"]])/2)),])
+                                                        (nrow(plot_test()[["df_quad2.csv"]])/2)),], paste("Quadrant 2:", input$text1, "v", input$text2))
       }
     } else if (controlVarPlotSex$plotReadySex == TRUE) {
       if(!(input$box8) && !(input$box2)){
@@ -560,13 +569,13 @@ server <- function(input, output, session) {
       if(!(input$box9) && !(input$box3)){
         p3 <- NULL
       } else if (!(input$box9)) {
-        p3 <- plot_CI(plot_test()[["df_quad3.csv"]][seq_len(input$freq),])
+        p3 <- plot_CI(plot_test()[["df_quad3.csv"]][seq_len(input$freq),], paste("Quadrant 3:", input$text1))
       } else if (!(input$box3)) {
         p3 <- plot_CI(plot_test()[["df_quad3.csv"]][seq_len(input$freq) + 
-                                                      (nrow(plot_test()[["df_quad3.csv"]])/2),])
+                                                      (nrow(plot_test()[["df_quad3.csv"]])/2),], paste("Quadrant 3:", input$text2))
       } else if ((input$box3) && (input$box9)){
         p3 <- plot_CI(plot_test()[["df_quad3.csv"]][c(seq_len(input$freq), seq_len(input$freq)+
-                                                        (nrow(plot_test()[["df_quad3.csv"]])/2)),])
+                                                        (nrow(plot_test()[["df_quad3.csv"]])/2)),], paste("Quadrant 3:", input$text1, "v", input$text2))
       }
     } else if (controlVarPlotSex$plotReadySex == TRUE) {
       if(!(input$box9) && !(input$box3)){
@@ -598,13 +607,13 @@ server <- function(input, output, session) {
       if(!(input$box4) && !(input$box10)){
         NULL
       } else if (!(input$box10)) {
-        plot_CI(plot_test()[["df_quad4.csv"]][seq_len(input$freq),])  
+        plot_CI(plot_test()[["df_quad4.csv"]][seq_len(input$freq),], paste("Quadrant 4:", input$text1))  
       } else if (!(input$box4)) {
         plot_CI(plot_test()[["df_quad4.csv"]][seq_len(input$freq) + 
-                                                (nrow(plot_test()[["df_quad4.csv"]])/2),]) 
+                                                (nrow(plot_test()[["df_quad4.csv"]])/2),], paste("Quadrant 4:", input$text2)) 
       } else if ((input$box4) && (input$box10)){
         plot_CI(plot_test()[["df_quad4.csv"]][c(seq_len(input$freq), seq_len(input$freq)+
-                                                  (nrow(plot_test()[["df_quad4.csv"]])/2)),])
+                                                  (nrow(plot_test()[["df_quad4.csv"]])/2)),], paste("Quadrant 4:", input$text1, "v", input$text2))
       }
     } else if (controlVarPlotSex$plotReadySex == TRUE) {
       if(!(input$box10) && !(input$box4)){
@@ -636,13 +645,13 @@ server <- function(input, output, session) {
       if(!(input$box5) && !(input$box11)){
         NULL
       } else if (!(input$box11)) {
-        plot_CI(plot_test()[["df_half1.csv"]][seq_len(input$freq),])  
+        plot_CI(plot_test()[["df_half1.csv"]][seq_len(input$freq),], paste("Half 1:", input$text1))  
       } else if (!(input$box5)) {
         plot_CI(plot_test()[["df_half1.csv"]][seq_len(input$freq) + 
-                                                (nrow(plot_test()[["df_half1.csv"]])/2),]) 
+                                                (nrow(plot_test()[["df_half1.csv"]])/2),], paste("Half 1:", input$text2)) 
       } else if ((input$box5) && (input$box11)){
         plot_CI(plot_test()[["df_half1.csv"]][c(seq_len(input$freq), seq_len(input$freq)+
-                                                  (nrow(plot_test()[["df_half1.csv"]])/2)),])
+                                                  (nrow(plot_test()[["df_half1.csv"]])/2)),], paste("Half 1:", input$text1, "v", input$text2))
       }
     } else if (controlVarPlotSex$plotReadySex == TRUE) {
       if(!(input$box11) && !(input$box5)){
@@ -675,13 +684,13 @@ server <- function(input, output, session) {
       if(!(input$box6) && !(input$box12)){
         NULL
       } else if (!(input$box12)) {
-        plot_CI(plot_test()[["df_half2.csv"]][seq_len(input$freq),])  
+        plot_CI(plot_test()[["df_half2.csv"]][seq_len(input$freq),], paste("Half 2:", input$text1))  
       } else if (!(input$box6)) {
         plot_CI(plot_test()[["df_half2.csv"]][seq_len(input$freq) + 
-                                                (nrow(plot_test()[["df_half2.csv"]])/2),]) 
+                                                (nrow(plot_test()[["df_half2.csv"]])/2),], paste("Half 2:", input$text2)) 
       } else if ((input$box6) && (input$box12)){
         plot_CI(plot_test()[["df_half2.csv"]][c(seq_len(input$freq), seq_len(input$freq)+
-                                                  (nrow(plot_test()[["df_half2.csv"]])/2)),])
+                                                  (nrow(plot_test()[["df_half2.csv"]])/2)),], paste("Half 2:", input$text1, "v", input$text2))
       }
     } else if (controlVarPlotSex$plotReadySex == TRUE) {
       if(!(input$box12) && !(input$box6)){
