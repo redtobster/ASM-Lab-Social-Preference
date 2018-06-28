@@ -1,6 +1,6 @@
 # **Readme for the social_behaviour_v4.py**
 User is to run this python program to get the analysis results of the excel files that are obtained from the social recognition experiments.
-- List of packages necessary:
+List of packages necessary:
   - Numpy
   - Pandas
   - Scipy
