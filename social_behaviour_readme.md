@@ -95,7 +95,7 @@ def mean_confidence_interval(data, confidence=0.95):
     return m.round(2), (m - h).round(2), (m + h).round(2), h.round(2)
 ```
 
-The function that takes in a data frame and percent of confidence (default at 95 percent) is written. This function is modified from [this stackoverflow page](https://stackoverflow.com/questions/15033511/compute-a-confidence-interval-from-sample-data) This function is used later on to compute the mean, upper bound, lower bound and the difference between the upper bound and the mean.
+The function that takes in a data frame and percent of confidence (default at 95 percent) is written. This function is modified from one in [this stackoverflow page](https://stackoverflow.com/questions/15033511/compute-a-confidence-interval-from-sample-data). This function is used later on to compute the mean, upper bound, lower bound and the difference between the upper bound and the mean.
 
 ## Lines 110 - 236
 
