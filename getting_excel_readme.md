@@ -78,6 +78,6 @@ def getting_name(left_tank):
     		return string
 ```
 
-The [function `getting_name`](# Readme for the getting_excel.py) takes a list of excel file names as argument. Then it gets all letters of the excel file before the character ‘_’. This string is then returned.
+The [function `getting_name`](#Readme-for-the-getting_excel.py) takes a list of excel file names as argument. Then it gets all letters of the excel file before the character ‘_’. This string is then returned.
 
 As always, I am very happy to receive suggestions to make the code more elegant.
