@@ -4,7 +4,7 @@ This python file contains _two_ functions:
   1. `categorize_files` - to get the names of the excel files and store them into a list.
   1. `getting_name` - to get the more general name of the excel file for the output folder name.
 
-- List of packages necessary:
+List of packages necessary:
   - Regex
 
 ## Lines 11 - 14
