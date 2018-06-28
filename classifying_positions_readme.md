@@ -5,7 +5,7 @@ This python file contains _five_ functions:
   1. `get_index_sex` - function to automatically get the index of where the string 'FishSex' in the excel sheet.
   1. `get_index_fps` - function to automatically get the index of where the string 'FrameRate' in the excel sheet.
   1. `assign_left_tank` - function to extract the positional information of the subject that has its companion at the _left_ side of the tank.
-  1. 1. `assign_right_tank` - function to extract the positional information of the subject that has its companion at the _right_ side of the tank
+  1. `assign_right_tank` - function to extract the positional information of the subject that has its companion at the _right_ side of the tank
   
 List of packages necessary:
   - pandas
