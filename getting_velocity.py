@@ -1,5 +1,4 @@
-from getting_velocity_fun import check_input, safe_arctan, determine_quad_left_tank, determine_quad_right_tank, compute_velocity_df, modify_excel_with_velocity
-from index_fun import get_index_x_y, get_index_fps
+from getting_velocity_fun import check_input, modify_excel_with_velocity
 import os
 
 # getting the directory that contains the excel files
