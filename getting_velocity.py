@@ -5,6 +5,7 @@ import os
 import math
 import numpy as np
 import re
+import time
 
 # getting the directory that contains the excel files
 desktop = os.path.join(os.environ["HOMEPATH"], "Desktop")
@@ -33,11 +34,6 @@ tank_width = int(check_input(tank_width))
 print('organizing data..')
 first_two_minutes_left, first_two_minutes_right, left_tank, right_tank = categorize_files(path)
 
-# creating the csv file for the first excel file to have the header
-# opening the excel file
-file_name = path + left_tank[0]
-df = pd.read_excel(io=file_name, sheet_name='Tank1', header=None)
-
 # getting the index of 'x' and 'y'
 def get_index_x_y(df):
     index_x = [0, 0]
@@ -52,6 +48,17 @@ def get_index_x_y(df):
                 index_y[1] = col
                 return index_x, index_y
 
+# getting the index of the frame rate
+def get_index_fps(df):
+    index_fps = [0, 0]
+    df = df.fillna('empty')
+    for row in list(df.index):
+        for col in list(df.columns):
+            if bool(re.match('FrameRate.*', str(df.loc[row, col]))):
+                index_fps[0] = row
+                index_fps[1] = col
+                return index_fps
+
 # home made arctan function that allows division by 0
 def safe_arctan(n1, n2):
     if n2 == 0:
@@ -62,22 +69,48 @@ def safe_arctan(n1, n2):
     else:
         return(np.arctan(n1/n2))
 
-def compute_velocity_df(df, tank_length, tank_width):
+# Preparatory function to get the location (quadrant) based on x and y axes.
+def determine_quad_left_tank(x, y, x_mid, y_mid):
+    quad = 'somestring'
+    if x < x_mid:
+        if y > y_mid:
+            quad = 'Q1'
+        else:
+            quad = 'Q3'
+    elif x >= x_mid:
+        if y > y_mid:
+            quad = 'Q2'
+        else:
+            quad = 'Q4'
+    return quad
+
+def determine_quad_right_tank(x, y, x_mid, y_mid):
+    quad = 'somestring'
+    if x < x_mid:
+        if y > y_mid:
+            quad = 'Q2'
+        else:
+            quad = 'Q4'
+    elif x >= x_mid:
+        if y > y_mid:
+            quad = 'Q1'
+        else:
+            quad = 'Q3'
+    return quad
+
+def compute_velocity_df(df, tank_length, tank_width, direction):
 	# giving names to the columns of the df
 	col = 'col'
 	col_names = [col + str(i) for i in range(len(df.columns))]
 	df.columns = col_names
 
+	# getting the length and width of tanks in pixels. This part is still hard coded
+	x_min, x_max, y_min, y_max = df.loc[5, 'col2'], df.loc[6, 'col2'], df.loc[5, 'col3'], df.loc[6, 'col3']
+	delta_x, x_mid, delta_y, y_mid= x_max - x_min, (x_max + x_min)/2, y_max - y_min, (y_max + y_min)/2
 	# getting the indices where 'x' and 'y' are located in the excel file
 	index_x, index_y = get_index_x_y(df)
-
-	# getting the length and width of tanks in pixels. This part is still hard coded
-	x_min = df.loc[5, 'col2']
-	x_max = df.loc[6, 'col2']
-	delta_x = x_max - x_min
-	y_min = df.loc[5, 'col3']
-	y_max = df.loc[6, 'col3']
-	delta_y = y_max - y_min
+	index_fps = get_index_fps(df)
+	frame_rate = int(re.findall('[0-9]+', df.loc[index_fps[0], index_fps[1]])[0])
 
 	# deleting the frames in which the fish is not tracked
 	row_number = index_x[0] + 2
@@ -93,14 +126,18 @@ def compute_velocity_df(df, tank_length, tank_width):
 	df.drop(df.index[lst], inplace=True)
 	df = df.reset_index(drop=True)
 
+	print('computing velocity..')
 	row_number = index_x[0] + 2
 	col_number = int(re.findall('[0-9]+', index_y[1])[0])
 	# computing the information about the velocity and assigning it to the rows
+	start = time.time()
 	for i in range(row_number, len(df)-1):
 	    df.iloc[i+1, col_number+1] = (df.iloc[i+1, col_number-1] - df.iloc[i, col_number-1])*(tank_length/delta_x)
 	    df.iloc[i+1, col_number+2] = (df.iloc[i+1, col_number] - df.iloc[i, col_number])*(tank_width/delta_y)
-	    df.iloc[i+1, col_number+3] = math.sqrt((df.iloc[i+1, col_number+1])**2 + (df.iloc[i+1, col_number+2]**2))
+	    df.iloc[i+1, col_number+3] = math.hypot(df.iloc[i+1, col_number+1], df.iloc[i+1, col_number+2])
 	    df.iloc[i+1, col_number+4] = safe_arctan(df.iloc[i+1, col_number+2], df.iloc[i+1, col_number+1])
+	end = time.time()
+	print(end - start)
 
 	# assigning the names of the header which the below rows contain info about velocity
 	df.iloc[index_x[0], col_number+1], df.iloc[index_x[0], col_number+2], df.iloc[index_x[0], col_number+3], df.iloc[index_x[0], col_number+4] = 'velocity_x', 'velocity_y', 'velocity', 'angle'
@@ -108,32 +145,79 @@ def compute_velocity_df(df, tank_length, tank_width):
 	# dropping the first frame of the velocity row
 	df.drop(index_x[0]+1, axis = 0, inplace = True)
 	df.drop(index_x[0]+2, axis = 0, inplace = True)
+	df.reset_index(drop = True, inplace = True)
+	
+	print('adding freeze counts and locations..')
+	# the logic to get the per sec speed and the freeze info
+	body_length = 35 # body length is hard coded here. It is assumed to be 35mm
+	lst = []
+	freeze_info = []
+	counter = 0
+	acc_value = 0
+	i = index_x[0] + 1
+	while (i < len(df)):
+	    if counter == frame_rate:
+	        if acc_value < (body_length * 0.1):
+	        	if direction == 'left':
+		            quad = determine_quad_left_tank(df.loc[i, index_x[1]], df.loc[i,index_y[1]], x_mid, y_mid)
+		        elif direction == 'right':
+		        	quad = determine_quad_right_tank(df.loc[i, index_x[1]], df.loc[i,index_y[1]], x_mid, y_mid)
+		        while (acc_value < body_length * 0.1):
+		        	acc_value = acc_value + df.iloc[i, col_number+3]
+		        	i = i + 1
+		        	counter = counter + 1
+		        freeze_duration = (counter/frame_rate)
+		        freeze_info.append((quad, freeze_duration, str(i-counter) + '-' + str(i)))
+		        counter = 0
+	        counter = 0
+	        lst.append(acc_value)
+	        acc_value = 0
+	        i = i + 1
+	    else:
+	        counter = counter + 1
+	        acc_value = acc_value + df.loc[i, index_fps[1]]
+	        i = i + 1
 
-	return df
+	# setting up the dataframe for writing
+	df_velocity = pd.DataFrame(lst)
+	df_velocity.set_index(df_velocity.index + 1, inplace = True)
+	df_velocity.columns = ['Velocity (mm/s)']
+	# check first if freeze_info is empty (does not contain any freezing episode)
+	if not freeze_info:
+		df_freeze_info = pd.DataFrame(freeze_info)
+	else:
+		df_freeze_info = pd.DataFrame(freeze_info)
+		df_freeze_info.columns = ['Location', 'Duration (s)', 'Frame Number']
+
+	return df, df_velocity, df_freeze_info
 
 # function to modify the excel in place with the velocity information
-def modify_excel_with_velocity(excel_name):
+def modify_excel_with_velocity(excel_name, direction):
 	excel_name = path + excel_name
-	df = pd.read_excel(io=excel_name, sheet_name=0, header=None)
-	df = compute_velocity_df(df, tank_length, tank_width)
-	df.to_excel(excel_name, 'Tank1', header=None, index=False)
+	df = pd.read_excel(io=excel_name, sheet_name='Tank1', header=None)
+	df, df_velocity, df_freeze_info = compute_velocity_df(df, tank_length, tank_width, direction)
+	writer = pd.ExcelWriter(excel_name)
+	df.to_excel(writer, sheet_name = 'Tank1', header=None, index=False)
+	df_velocity.to_excel(writer, sheet_name = 'Velocity per Second')
+	df_freeze_info.to_excel(writer, sheet_name = 'Freeze Analysis', index=False)
+	writer.save()
 
 # iterating through the excel files in the folder
+print('initializing sheet modification..')
 for i in range(len(left_tank)):
-	print('initializing sheet modification..')
-	modify_excel_with_velocity(left_tank[i])
-	print('computing velocity %s completed' % (left_tank[i]))
+	modify_excel_with_velocity(left_tank[i], 'left')
+	print('modifying sheet %s completed' % (left_tank[i]))
 
 for i in range(len(right_tank)):
-	modify_excel_with_velocity(right_tank[i])
-	print('computing velocity %s completed' % (right_tank[i]))
+	modify_excel_with_velocity(right_tank[i], 'right')
+	print('modifying sheet %s completed' % (right_tank[i]))
 
 for i in range(len(first_two_minutes_left)):
-	modify_excel_with_velocity(first_two_minutes_left[i])
-	print('computing velocity %s completed' % (first_two_minutes_left[i]))
+	modify_excel_with_velocity(first_two_minutes_left[i], 'left')
+	print('modifying sheet %s completed' % (first_two_minutes_left[i]))
 
 for i in range(len(first_two_minutes_right)):
-	modify_excel_with_velocity(first_two_minutes_right[i])
-	print('computing velocity %s completed' % (first_two_minutes_right[i]))
+	modify_excel_with_velocity(first_two_minutes_right[i], 'right')
+	print('modifying sheet %s completed' % (first_two_minutes_right[i]))
 
-print('sheet modification completed')
+print('sheet modification and velocity analysis completed')
