@@ -1,4 +1,5 @@
 from getting_velocity_fun import check_input, modify_excel_with_velocity
+from getting_excel import categorize_files
 import os
 
 # getting the directory that contains the excel files
@@ -24,19 +25,19 @@ first_two_minutes_left, first_two_minutes_right, left_tank, right_tank = categor
 # iterating through the excel files in the folder
 print('initializing sheet modification..')
 for i in range(len(left_tank)):
-	modify_excel_with_velocity(left_tank[i], 'left')
+	modify_excel_with_velocity(left_tank[i], 'left', path, tank_length, tank_width)
 	print('modifying sheet %s completed' % (left_tank[i]))
 
 for i in range(len(right_tank)):
-	modify_excel_with_velocity(right_tank[i], 'right')
+	modify_excel_with_velocity(right_tank[i], 'right', path, tank_length, tank_width)
 	print('modifying sheet %s completed' % (right_tank[i]))
 
 for i in range(len(first_two_minutes_left)):
-	modify_excel_with_velocity(first_two_minutes_left[i], 'left')
+	modify_excel_with_velocity(first_two_minutes_left[i], 'left', path, tank_length, tank_width)
 	print('modifying sheet %s completed' % (first_two_minutes_left[i]))
 
 for i in range(len(first_two_minutes_right)):
-	modify_excel_with_velocity(first_two_minutes_right[i], 'right')
+	modify_excel_with_velocity(first_two_minutes_right[i], 'right', path, tank_length, tank_width)
 	print('modifying sheet %s completed' % (first_two_minutes_right[i]))
 
 print('sheet modification and velocity analysis completed')
