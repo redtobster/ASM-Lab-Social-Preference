@@ -1,7 +1,9 @@
 from __future__ import division
+from index_fun import get_index_x_y, get_index_fps
 import pandas as pd
 import math
 import numpy as np
+import re
 
 # checker function to ensure the input is correct
 def check_input(tank_length_or_width): # helper function to make sure input is integer
@@ -140,7 +142,7 @@ def compute_velocity_df(df, tank_length, tank_width, direction):
 	return df, df_velocity, df_freeze_info
 
 # function to modify the excel in place with the velocity information
-def modify_excel_with_velocity(excel_name, direction):
+def modify_excel_with_velocity(excel_name, direction, path, tank_length, tank_width):
 	excel_name = path + excel_name
 	df = pd.read_excel(io=excel_name, sheet_name='Tank1', header=None)
 	df, df_velocity, df_freeze_info = compute_velocity_df(df, tank_length, tank_width, direction)
