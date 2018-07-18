@@ -24,7 +24,7 @@ This python script requires the following packages:
 
 Also, make sure that the python scripts `classifying_positions_v3.py` and `getting_excel.py` are installed and stored in the same location as `social_behaviour_v4.py`.
 
-Once you have these packages and programs installed, you are ready to run the script `social_behaviour_v4.py`, specify the folder that contains the excel sheet and then a new folder called _extracted_info__(something)_ will appear that contains 6 csv files. These csv files will contain the positional information of the fish. At a given minute, the percentage of time the fish spends in a particular quadrant is specified.
+Once you have these packages and programs installed, you are ready to run the script `social_behaviour_v4.py`, specify the folder that contains the excel sheet and then a new folder called _extracted\_info\_(something)_ will appear that contains 6 csv files. These csv files will contain the positional information of the fish. At a given minute, the percentage of time the fish spends in a particular quadrant is specified.
 
 ## app.R
 
