@@ -112,7 +112,7 @@ def compute_velocity_df(df, tank_length, tank_width, direction):
 		            quad = determine_quad_left_tank(df.loc[i, index_x[1]], df.loc[i,index_y[1]], x_mid, y_mid)
 		        elif direction == 'right':
 		        	quad = determine_quad_right_tank(df.loc[i, index_x[1]], df.loc[i,index_y[1]], x_mid, y_mid)
-		        while (acc_value < body_length * 0.1):
+		        while (acc_value < body_length * 0.1 and i < len(df)):
 		        	acc_value = acc_value + df.iloc[i, col_number+3]
 		        	i = i + 1
 		        	counter = counter + 1
