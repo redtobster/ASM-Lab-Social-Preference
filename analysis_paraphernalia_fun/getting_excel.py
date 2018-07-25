@@ -49,6 +49,15 @@ def getting_name(left_tank):
 		string = re.match('([A-Z]+).*', left_tank[0]).group(1)
     		return string
 
+def categorize_NTD_files(path):
+	# getting all excel files in the directory
+	extension = 'xls'
+	os.chdir(path)
+	excel_files = [i for i in glob.glob('*.{}'.format(extension))]
+	excel_files.sort()
+
+	return excel_files
+	
 # Uncomment the codes below to test if the file works
 # first_two_minutes_left, first_two_minutes_right, left_tank, right_tank = categorize_files(path)
 # print(first_two_minutes_left)
