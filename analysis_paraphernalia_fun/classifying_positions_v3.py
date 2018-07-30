@@ -1,3 +1,5 @@
+from __future__ import division
+import math
 from index_fun import get_index_x_y, get_index_sex, get_index_fps
 import pandas as pd
 import numpy as np
@@ -18,7 +20,7 @@ def assign_left_tank(df_left_tank, excel_name):
 
 	# parameters that should be obtained from the excel files
 	frame_rate = int(re.findall('[0-9]+', df_left_tank.loc[index_fps[0], index_fps[1]])[0]) # usually 12 fps
-	experiment_time = (df_left_tank.shape[0] / frame_rate) / 60 # experiment time is in minutes
+	experiment_time = int(math.ceil((df_left_tank.shape[0] / frame_rate) / 60)) # experiment time is in minutes
 	sex = re.match('FishSex:(.*)', df_left_tank.loc[index_sex[0], index_sex[1]]).group(1) 
 
 	# creating data frame for each quadrant depending on the parameters above
@@ -38,10 +40,10 @@ def assign_left_tank(df_left_tank, excel_name):
 	# determining key positions in the tank to create the quadrants
 	x_min = df_left_tank.loc[5, 'col2']
 	x_max = df_left_tank.loc[6, 'col2']
-	x_mid = (x_min + x_max)/2
+	x_mid = (x_min + x_max)//2
 	y_min = df_left_tank.loc[5, 'col3']
 	y_max = df_left_tank.loc[6, 'col3']
-	y_mid = (y_min + y_max)/2
+	y_mid = (y_min + y_max)//2
 
 	# creating the for loop to assign which quadrant the fish belongs at a given time after the first two minutes
 	# start at column 3 because the first two columns are for the name and the sex
@@ -133,7 +135,7 @@ def assign_right_tank(df_right_tank, excel_name):
 	
 	# parameters that should be obtained from the excel file
 	frame_rate = int(re.findall('[0-9]+', df_right_tank.loc[index_fps[0], index_fps[1]])[0]) # usually 12 fps
-	experiment_time = (df_right_tank.shape[0] / frame_rate) / 60 # experiment time is in minutes
+	experiment_time = int(math.ceil((df_right_tank.shape[0] / frame_rate) / 60)) # experiment time is in minutes
 	sex = re.match('FishSex:(.*)', df_right_tank.loc[index_sex[0], index_sex[1]]).group(1)
 
 	# creating data frame for each quadrant depending on the parameters above
@@ -153,10 +155,10 @@ def assign_right_tank(df_right_tank, excel_name):
 	# determining key positions in the tank to create the quadrants
 	x_min = df_right_tank.loc[5, 'col2']
 	x_max = df_right_tank.loc[6, 'col2']
-	x_mid = (x_min + x_max)/2
+	x_mid = (x_min + x_max)//2
 	y_min = df_right_tank.loc[5, 'col3']
 	y_max = df_right_tank.loc[6, 'col3']
-	y_mid = (y_min + y_max)/2
+	y_mid = (y_min + y_max)//2
 
 	# creating the for loop to assign which quadrant the fish belongs at a given time after the first two minutes
 	# start at column 3 because the first two columns are for the name and the sex
